@@ -92,13 +92,13 @@ public class UsuarioController {
         return "redirect:/usuario/login"; // Redirect to login page
     }
 
-    @GetMapping("/logout")
-    public String logoutRedirect() {
-        // Spring Security handles the actual logout at POST /logout or configured logout URL.
-        // This GET mapping is just to redirect to login page with a logout message,
-        // assuming SecurityConfig is set up for .logoutSuccessUrl("/usuario/login?logout=true")
-        return "redirect:/usuario/login?logout=true";
-    }
+//    @GetMapping("/logout")
+//    public String logoutRedirect() {
+//        // Spring Security handles the actual logout at POST /logout or configured logout URL.
+//        // This GET mapping is just to redirect to login page with a logout message,
+//        // assuming SecurityConfig is set up for .logoutSuccessUrl("/usuario/login?logout=true")
+//        return "redirect:/usuario/login?logout=true";
+//    }
 
     // The /perfil and /actualizar-perfil methods still use HttpSession.
     // These will need to be updated in a separate step to use Spring Security's AuthenticationPrincipal.
