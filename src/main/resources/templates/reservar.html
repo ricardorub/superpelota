@@ -309,7 +309,61 @@
                 }
             }
 
-            // 6. Validación del formulario antes de enviar
+            // 6. Función para verificar disponibilidad
+            async function checkAvailability() {
+                if (!selectedCourt || !fechaInput.value || !horaInicioSelect.value || !horaFinSelect.value) {
+                    return;
+                }
+
+                const canchaId = canchaIdInput.value;
+                const fecha = fechaInput.value;
+                const horaInicio = horaInicioSelect.value;
+                const horaFin = horaFinSelect.value;
+
+                const url = `/reserva/disponibilidad?canchaId=${canchaId}&fecha=${fecha}&horaInicio=${horaInicio}&horaFin=${horaFin}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    const availabilityMessage = document.getElementById('availabilityMessage');
+
+                    if (!availabilityMessage) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.id = 'availabilityMessage';
+                        messageDiv.classList.add('alert', 'mt-3');
+                        form.insertBefore(messageDiv, submitButton.parentElement);
+                    }
+                    
+                    const messageDiv = document.getElementById('availabilityMessage');
+
+                    if (data.disponible) {
+                        submitButton.disabled = false;
+                        messageDiv.textContent = 'Horario disponible.';
+                        messageDiv.classList.remove('alert-danger');
+                        messageDiv.classList.add('alert-success');
+                    } else {
+                        submitButton.disabled = true;
+                        messageDiv.textContent = 'Lo sentimos, este horario ya no está disponible. Por favor, selecciona otro.';
+                        messageDiv.classList.remove('alert-success');
+                        messageDiv.classList.add('alert-danger');
+                    }
+                } catch (error) {
+                    console.error('Error al verificar disponibilidad:', error);
+                }
+            }
+
+            // Validar disponibilidad al cambiar cualquier campo relevante
+            fechaInput.addEventListener('change', checkAvailability);
+            horaInicioSelect.addEventListener('change', checkAvailability);
+            horaFinSelect.addEventListener('change', checkAvailability);
+            courtCards.forEach(card => {
+                card.addEventListener('click', checkAvailability);
+            });
+
+
+            // 7. Validación del formulario antes de enviar
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();
