@@ -66,11 +66,6 @@ public class ReservaService {
         return reservaRepository.findByUsuarioAndEstado(usuario, estado);
     }
 
-    public List<Reserva> obtenerReservasPasadas(Usuario usuario) {
-        return reservaRepository.findByUsuarioAndFechaHoraFinBeforeAndEstadoNot(
-                usuario, LocalDateTime.now(), "CANCELADA");
-    }
-
     public void cancelarReserva(Long reservaId, String motivo) {
         Reserva reserva = obtenerReservaPorId(reservaId);
         if (reserva != null) {
@@ -83,37 +78,37 @@ public class ReservaService {
             throw new RuntimeException("Reserva no encontrada");
         }
     }
+
     public long contarReservasHoy() {
         LocalDate hoy = LocalDate.now();
         LocalDateTime inicio = hoy.atStartOfDay();
         LocalDateTime fin = hoy.atTime(LocalTime.MAX);
         return reservaRepository.countByFechaHoraInicioBetweenAndEstadoNot(inicio, fin, "CANCELADA");
     }
-     public List<Reserva> obtenerReservasPorCanchaYFecha(Cancha cancha, LocalDate fecha) {
+
+    public List<Reserva> obtenerReservasPorCanchaYFecha(Cancha cancha, LocalDate fecha) {
         LocalDateTime inicio = fecha.atStartOfDay();
         LocalDateTime fin = fecha.atTime(23, 59, 59);
         return reservaRepository.findByCanchaAndFechaHoraInicioBetween(cancha, inicio, fin);
     }
+
     public List<Reserva> obtenerReservasPorFecha(LocalDate fecha) {
         LocalDateTime inicio = fecha.atStartOfDay();
         LocalDateTime fin = fecha.atTime(23, 59, 59);
         return reservaRepository.findByFechaHoraInicioBetween(inicio, fin);
     }
-     public void cambiarEstado(Long id, String nuevoEstado) {
-        Reserva reserva = reservaRepository.findById(id).orElseThrow(() ->
-            new IllegalArgumentException("Reserva no encontrada con ID: " + id)
-        );
+
+    public void cambiarEstado(Long id, String nuevoEstado) {
+        Reserva reserva = reservaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con ID: " + id));
         reserva.setEstado(nuevoEstado);
         reservaRepository.save(reserva);
     }
-    
-    
-public List<Reserva> obtenerReservasConfirmadasPasadas(Usuario usuario) {
-    return reservaRepository.findByUsuarioAndEstadoAndFechaHoraFinBefore(
-        usuario, 
-        "CONFIRMADA", 
-        LocalDateTime.now()
-    );
-}
+
+    public List<Reserva> obtenerReservasConfirmadasPasadas(Usuario usuario) {
+        return reservaRepository.findByUsuarioAndEstado(
+                usuario,
+                "CONFIRMADA");
+    }
 
 }
